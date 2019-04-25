@@ -1,1 +1,1 @@
-include ':lesson10_text_xfermode'
+include ':lesson10_drawing', ':lesson11_text_xfermode', ':lib', ':lesson12_animation', ':lesson13_bitmap_drawable', ':lesson14_layout'
