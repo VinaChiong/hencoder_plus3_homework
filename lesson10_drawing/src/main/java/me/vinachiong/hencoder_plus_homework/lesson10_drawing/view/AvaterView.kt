@@ -42,13 +42,7 @@ class AvaterView : View {
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
 
-        val option = BitmapFactory.Options()
-        option.inJustDecodeBounds = true
-        BitmapFactory.decodeResource(resources, R.drawable.avatar_rengwuxian, option)
-        option.inJustDecodeBounds = false
-        option.inDensity = option.outWidth
-        option.inTargetDensity = WIDTH.toInt()
-        mBitmap = BitmapFactory.decodeResource(resources, R.drawable.avatar_rengwuxian, option)
+        mBitmap = Utils.getAvatar(resources, WIDTH.toInt())
 
     }
 
