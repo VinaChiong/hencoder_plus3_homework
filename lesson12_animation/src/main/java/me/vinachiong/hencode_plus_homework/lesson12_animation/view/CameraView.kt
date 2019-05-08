@@ -1,4 +1,4 @@
-package me.vinachiong.hencoder_plus3_homework.lesson11_text_xfermode.view
+package me.vinachiong.hencode_plus_homework.lesson12_animation.view
 
 import android.content.Context
 import android.graphics.*
@@ -18,8 +18,23 @@ class CameraView : View {
     private val IMAGE_PADDING = Utils.dp2px(100f)
     private val paint = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private val bitmap: Bitmap = Utils.getAvatar(resources, IMAGE_WIDTH.toInt())
-    private val rect = RectF()
-    private val path = Path()
+
+    var topFlip = 0f
+        set(value) {
+            field = value
+            invalidate()
+        }
+    var bottomFlip = 0f
+        set(value) {
+            field = value
+            invalidate()
+        }
+    var flipRotation = 0f
+        set(value) {
+            field = value
+            invalidate()
+        }
+
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -35,7 +50,7 @@ class CameraView : View {
 
     private val camera = Camera()
     private fun init(attrs: AttributeSet?, defStyle: Int) {
-        camera.rotateX(45f)
+
         camera.setLocation(0f, 0f, Utils.getZForCamera().toFloat()) // -8 * 72
     }
 
@@ -44,9 +59,13 @@ class CameraView : View {
         canvas.save()
         val tran = (IMAGE_PADDING + IMAGE_WIDTH / 2)
         canvas.translate(tran, tran)
-        canvas.rotate(-30f)
+        canvas.rotate(-flipRotation)
+        camera.save()
+        camera.rotateX(topFlip)
+        camera.applyToCanvas(canvas)
+        camera.restore()
         canvas.clipRect(-IMAGE_WIDTH, -IMAGE_WIDTH, IMAGE_WIDTH, 0f)
-        canvas.rotate(30f)
+        canvas.rotate(flipRotation)
         canvas.translate(-tran, -tran)
         canvas.drawBitmap(bitmap, IMAGE_PADDING, IMAGE_PADDING, paint)
         canvas.restore()
@@ -54,10 +73,13 @@ class CameraView : View {
 
         canvas.save()
         canvas.translate(tran, tran)
-        canvas.rotate(-30f)
+        canvas.rotate(-flipRotation)
+        camera.save()
+        camera.rotateX(bottomFlip)
         camera.applyToCanvas(canvas)
+        camera.restore()
         canvas.clipRect(-IMAGE_WIDTH, 0f, IMAGE_WIDTH, IMAGE_WIDTH)
-        canvas.rotate(30f)
+        canvas.rotate(flipRotation)
         canvas.translate(-tran, -tran)
         canvas.drawBitmap(bitmap, IMAGE_PADDING, IMAGE_PADDING, paint)
         canvas.restore()
