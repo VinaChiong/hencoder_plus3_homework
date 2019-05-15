@@ -1,8 +1,8 @@
 package me.vinachiong.hencode_plus_homework.lesson12_animation.view
 
 import android.content.Context
-import android.graphics.*
-import android.support.v4.content.res.ResourcesCompat
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import me.vinachiong.lib.Utils
@@ -50,6 +50,6 @@ class CircleView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        canvas.drawCircle(radius, radius, radius, mPaint)
+        canvas.drawCircle(width / 2f, height / 2f, radius, mPaint)
     }
 }

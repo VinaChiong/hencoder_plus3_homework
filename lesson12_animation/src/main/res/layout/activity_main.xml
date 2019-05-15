@@ -9,7 +9,7 @@
         >
 
     <me.vinachiong.hencode_plus_homework.lesson12_animation.view.CameraView
-            android:id="@+id/camera_view"
+            android:id="@+id/circle_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
