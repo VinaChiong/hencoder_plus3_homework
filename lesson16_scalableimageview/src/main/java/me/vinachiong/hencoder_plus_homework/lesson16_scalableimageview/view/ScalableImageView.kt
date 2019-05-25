@@ -2,13 +2,16 @@ package me.vinachiong.hencoder_plus_homework.lesson16_scalableimageview.view
 
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.OverScroller
 import me.vinachiong.lib.Utils
@@ -29,26 +32,38 @@ class ScalableImageView : View {
     private var originOffsetX = 0f
     /** 初始的中心y偏移 */
     private var originOffsetY = 0f
+
     /** 是否显示大图，默认false */
     private var big = false
     /** 放大倍数 */
     private var scaleBig: Float = 0f
     /** 缩小（较小边紧贴）倍数*/
     private var scaleSmall: Float = 0f
-    /** 缩放分数，用作动画值 */
-    private var scalaFraction: Float = 0f
+    /** 当前的缩放倍数，在scaleBig和scaleSmall值之间*/
+    private var currentScale: Float = 0f
         set(value) {
             field = value
             invalidate()
         }
+
+//    /** 缩放分数，用作动画值 */
+//    private var scalaFraction: Float = 0f
+//        set(value) {
+//            field = value
+//            invalidate()
+//        }
     /** 缩放的ObjectAnimator */
     private var scalaObjectAnimator: ObjectAnimator? = null
     /** 要显示的图像Bitmap */
     private lateinit var bitmap: Bitmap
     /** GestureDetector */
     private lateinit var mDetector: GestureDetectorCompat
+    /** ScaleGestureDetector */
+    private lateinit var mScaleDetector: ScaleGestureDetector
     /** 自定义GestureDetectorListener，主要实现双击、惯性滑动 */
     private val gestureDetectorListener = GestureDetectorListener()
+    /** 自定义ScaleListener，主要实现双指缩放 */
+    private val scaleListener = ScaleListener()
     /** 滑动时候图片的X偏移 */
     private var scrollOffsetX = 0f
     /** 滑动时候图片的Y偏移 */
@@ -78,6 +93,8 @@ class ScalableImageView : View {
         mDetector = GestureDetectorCompat(context, gestureDetectorListener)
         mDetector.setOnDoubleTapListener(gestureDetectorListener)
         mScroller = OverScroller(context)
+        mScaleDetector = ScaleGestureDetector(context, scaleListener)
+
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -94,34 +111,39 @@ class ScalableImageView : View {
             scaleBig = (width.toFloat() / bw) * SCALE_FACTOR
             scaleSmall = (height.toFloat() / bh)
         }
+        currentScale = scaleSmall
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(ContextCompat.getColor(context, android.R.color.black))
-        canvas.translate(scrollOffsetX, scrollOffsetY)
+//        canvas.translate(scrollOffsetX * scalaFraction, scrollOffsetY * scalaFraction)
 
-        val scale = scaleSmall + (scaleBig - scaleSmall) * scalaFraction
-        canvas.scale(scale, scale, width / 2f, height / 2f)
+
+        val fraction = (currentScale - scaleSmall) / (scaleBig - scaleSmall)
+        canvas.translate(scrollOffsetX * fraction, scrollOffsetY * fraction)
+
+//        val scale = scaleSmall + (scaleBig - scaleSmall) * scalaFraction
+        canvas.scale(currentScale, currentScale, width / 2f, height / 2f)
         canvas.drawBitmap(bitmap, originOffsetX, originOffsetY, paint)
     }
 
     private fun getScalaObjectAnimator(): ObjectAnimator {
         if (null == scalaObjectAnimator) {
             scalaObjectAnimator = ObjectAnimator.ofFloat(
-                this@ScalableImageView,
-                "scalaFraction", 0f, 1f
+                this@ScalableImageView, "currentScale", 0f
             )
         }
+        scalaObjectAnimator!!.setFloatValues(scaleSmall, scaleBig)
         return scalaObjectAnimator!!
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return if (mDetector.onTouchEvent(event)) {
-            true
-        } else {
-            super.onTouchEvent(event)
+        var result = mScaleDetector.onTouchEvent(event)
+        if (!mScaleDetector.isInProgress) {
+            result = mDetector.onTouchEvent(event)
         }
+        return result
     }
 
     private inner class FlingRunnable : Runnable {
@@ -132,6 +154,22 @@ class ScalableImageView : View {
                 invalidate()
                 postOnAnimation(this)
             }
+        }
+    }
+
+    private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        private var initScale: Float = 0f
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            // 缩放系数
+            // 计算新的currentScale
+            currentScale = initScale * detector.scaleFactor
+
+            return false
+        }
+
+        override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
+            initScale = currentScale
+            return super.onScaleBegin(detector)
         }
     }
 
@@ -147,8 +185,8 @@ class ScalableImageView : View {
                 adjustScrollOffset()
                 getScalaObjectAnimator().start()
             } else {
-                scrollOffsetX = 0f
-                scrollOffsetY = 0f
+//                scrollOffsetX = 0f
+//                scrollOffsetY = 0f
                 getScalaObjectAnimator().reverse()
             }
 
@@ -176,7 +214,7 @@ class ScalableImageView : View {
                     -((bitmap.height * scaleBig - height) / 2).toInt(),
                     ((bitmap.height * scaleBig - height) / 2).toInt()
                 )
-                postOnAnimation (flingRunnable)
+                postOnAnimation(flingRunnable)
             }
 
 
@@ -255,7 +293,7 @@ class ScalableImageView : View {
 
     companion object {
         private const val SCALE_FACTOR = 1.5f
-        private val IMAGE_WIDTH = Utils.dp2px(300f)
+        private val IMAGE_WIDTH = Utils.dp2px(400f)
         private const val TAG = "ScalableImageView"
     }
 }
