@@ -1,1 +1,8 @@
-include ':lesson10_drawing', ':lesson11_text_xfermode', ':lib', ':lesson12_animation', ':lesson13_bitmap_drawable', ':lesson14_layout', ':lesson16_scalableimageview'
+include ':lesson10_drawing',
+        ':lesson11_text_xfermode',
+        ':lib', ':lesson12_animation',
+        ':lesson13_bitmap_drawable',
+        ':lesson14_layout',
+        ':lesson16_scalableimageview',
+        ':lesson17_multitouch',
+        'lesson19_constraintlayout'
