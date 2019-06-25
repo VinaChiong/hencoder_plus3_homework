@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
-    <me.vinachiong.hencoder_plus_homework.lesson17_multitouch.view.MultiTouchView
+    <me.vinachiong.hencoder_plus_homework.lesson17_multitouch.view.MultiTouchView3
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 </RelativeLayout>
