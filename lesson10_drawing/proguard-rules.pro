@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepclasseswithmembernames class me.vinachiong.hencoder_plus_homework** {
+    * mPaint;
+    * mRectF;
+}
+
+-keep class me.vinachiong.**.AvaterView {
+    *;
+}
+
