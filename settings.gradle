@@ -1,8 +1,9 @@
-include ':lesson10_drawing',
+include ':lesson10_drawing', ':lesson23_thread_synchronized',
         ':lesson11_text_xfermode',
         ':lib', ':lesson12_animation',
         ':lesson13_bitmap_drawable',
         ':lesson14_layout',
         ':lesson16_scalableimageview',
         ':lesson17_multitouch',
-        'lesson19_constraintlayout'
+        'lesson19_constraintlayout',
+        'lesson23_thread_synchronized'
